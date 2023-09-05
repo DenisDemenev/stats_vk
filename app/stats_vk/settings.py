@@ -115,13 +115,11 @@ CELERY_BEAT_SCHEDULE = {
 
     "release_date_task": {
         "task": "stats.tasks.release_date_task",
-        "schedule": crontab(),
-        # "schedule": crontab(minute=0, hour='*/3'),
+        "schedule": crontab(minute=0, hour='*/3'),
     },
 
     "is_active_task": {
         "task": "stats.tasks.is_active_task",
-        "schedule": crontab(),
-        # "schedule": crontab(minute=0, hour='*/3'),
+        "schedule": crontab(minute=0, hour='*/3'),
     },
 }

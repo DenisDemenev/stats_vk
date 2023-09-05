@@ -1,5 +1,5 @@
 version: '3.9'
-web-apps:
+services:
   app:
     build:
       context: ./app
@@ -8,7 +8,7 @@ web-apps:
     ports:
       - 8000:8000
     volumes:
-      - ./web-app:/web-app
+      - ./service:/service
       - static_value:/app/static/
       - media_value:/app/media/
     env_file:
@@ -33,10 +33,9 @@ web-apps:
     build:
       context: ./app
     hostname: worker
-    # entrypoint: celery
     command: celery -A stats_vk worker -l INFO
     volumes:
-      - ./web-app:/web-app
+      - ./service:/service
     links:
       - redis
     depends_on:
@@ -63,7 +62,7 @@ web-apps:
     hostname: flower
     command: celery -A stats_vk beat -l info
     volumes:
-      - ./web-app:/web-app
+      - ./service:/service
     env_file:
      - ./.env
     depends_on:
@@ -75,7 +74,7 @@ web-apps:
 
     command: celery -A stats_vk flower
     volumes:
-      - ./web-app:/web-app
+      - ./service:/service
     env_file:
      - ./.env
     links:
