@@ -4,14 +4,14 @@ from celery.schedules import crontab
 import stats.tasks
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS'),
+CSRF_TRUSTED_ORIGINS = ['http://80.87.96.34/',]
 
 
-SECRET_KEY = os.environ.get('SECRET_KEY'),
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get('CSRF_TRUSTED_ORIGINS'),
+ALLOWED_HOSTS = ['http://80.87.96.34/', 'app', '*', 'app:8000']
 
 
 INSTALLED_APPS = [

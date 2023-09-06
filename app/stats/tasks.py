@@ -39,6 +39,7 @@ def release_date_task():
                     views_task.delay(time_out, rec.id)
                 else:
                     rec.is_deleted = True
+                    rec.is_active = False
                     rec.save()
 
 
