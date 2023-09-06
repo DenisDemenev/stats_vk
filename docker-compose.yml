@@ -3,12 +3,9 @@ services:
   app:
     build:
       context: ./app
-    command: python manage.py runserver 0.0.0.0:8000
-
-    ports:
-      - 8000:8000
+    restart: always
     volumes:
-      - ./service:/service
+      - service:/service
       - static_value:/app/static/
       - media_value:/app/media/
     env_file:
@@ -35,7 +32,7 @@ services:
     hostname: worker
     command: celery -A stats_vk worker -l INFO
     volumes:
-      - ./service:/service
+      - service:/service
     links:
       - redis
     depends_on:
@@ -62,7 +59,7 @@ services:
     hostname: flower
     command: celery -A stats_vk beat -l info
     volumes:
-      - ./service:/service
+      - service:/service
     env_file:
      - ./.env
     depends_on:
@@ -74,7 +71,7 @@ services:
 
     command: celery -A stats_vk flower
     volumes:
-      - ./service:/service
+      - service:/service
     env_file:
      - ./.env
     links:
@@ -85,6 +82,7 @@ services:
       - 5555:5555
 
 volumes:
+  service:
   postgres_data:
   static_value:
   media_value:
