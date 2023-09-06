@@ -2,7 +2,7 @@ import os
 
 import vk
 
-token = 'vk1.a.jombWmalPETF6clfQV9IKOdtRtdcWjxakRyXKVl9Q2rFxqq4zv-vlQn9w_EZKrp0httZLTjZlLdW_mBYirbxRxZc0iDhEu98zjYclDpLT736iwGA176UwCjD2z7nK1eTdALOIRVvVutfXj7IN0Qs3hI3wo3Ek2JjdGq7fFGd5L5bA6_XqLxB97ZHoIay-8ue_-csQZqPOBUFV8QPbqTbHQ'
+token = os.environ.get('TOKEN'),
 
 
 def release_date(id):

@@ -4,14 +4,14 @@ from celery.schedules import crontab
 import stats.tasks
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS'),
 
 
-SECRET_KEY = 'django-insecure-y20y0!!a(#f!z4a7^89-v7nnm$@3k*kx8w^3o5&h7ku3h*_u=a'
+SECRET_KEY = os.environ.get('SECRET_KEY'),
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://127.0.0.1', 'app', '*']
+ALLOWED_HOSTS = os.environ.get('CSRF_TRUSTED_ORIGINS'),
 
 
 INSTALLED_APPS = [
@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'stats',
-    'django_celery_beat',
     'celery',
 ]
 
