@@ -36,15 +36,13 @@ def release_date_task():
             if (post):
                 rec.release_date = datetime.datetime.fromtimestamp(
                     post['date'])
-                stats_date_timestamp = int(post['date']) + 85800
-                stats_date = datetime.datetime.fromtimestamp(
-                    stats_date_timestamp)
-                rec.stats_date = stats_date
+                stats_date = int(post['date']) + 85800
+                rec.stats_date = datetime.datetime.fromtimestamp(stats_date)
                 rec.save()
-                time_out = stats_date_timestamp - time.time()
+                time_out = stats_date - time.time()
                 if time_out > 0:
                     # views_task.delay(time_out, rec.id)
-                    views_task.apply_async((rec.id), eta=stats_date)
+                    views_task.apply_async((rec.id), countdown=time_out)
                 else:
                     rec.is_deleted = True
                     rec.is_active = False
