@@ -42,7 +42,7 @@ def release_date_task():
                 time_out = stats_date - time.time()
                 if time_out > 0:
                     # views_task.delay(time_out, rec.id)
-                    views_task.apply_async((rec.id), countdown=time_out)
+                    views_task.apply_async((rec.id,), countdown=time_out)
                 else:
                     rec.is_deleted = True
                     rec.is_active = False
