@@ -13,8 +13,14 @@ def views_task(time_out, id):
     sleep(time_out)
     record = Record.objects.get(id=id)
     post = release_date(record.link.split('=wall')[1])
-    record.views = post['views']['count']
-    record.save()
+    views = post['views']['count']
+    if views:
+        record.views = views
+        record.save()
+    else:
+        record.is_deleted = True
+        record.is_active = False
+        record.save()
 
 
 @shared_task
@@ -27,6 +33,7 @@ def release_date_task():
     record = Record.objects.filter(is_active=True)
     for rec in record:
         if not rec.release_date:
+            time.sleep(1)
             post = release_date(rec.link.split('=wall')[1])
             if (post):
                 rec.release_date = datetime.datetime.fromtimestamp(
