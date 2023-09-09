@@ -9,6 +9,9 @@ logger = get_task_logger(__name__)
 def views_task(id):
     from stats.models import Record
     from stats.utils import release_date
+    import time
+
+    time.sleep(1)
     record = Record.objects.get(id=id)
     post = release_date(record.link.split('=wall')[1])
     views = post['views']['count']
@@ -58,3 +61,29 @@ def is_active_task():
         if rec.views or rec.is_deleted:
             rec.is_active = False
             rec.save()
+
+
+@shared_task
+def manual_release_date_task(record_id):
+    from stats.models import Record
+    from stats.utils import release_date
+    import datetime
+    import time
+
+    record = Record.objects.get(id=record_id)
+    time.sleep(1)
+    post = release_date(record.link.split('=wall')[1])
+    if (post):
+        record.release_date = datetime.datetime.fromtimestamp(
+            post['date'])
+        stats_date = int(post['date']) + 85800
+        record.stats_date = datetime.datetime.fromtimestamp(stats_date)
+        record.save()
+        time_out = stats_date - time.time()
+        if time_out > 0:
+            # views_task.delay(time_out, rec.id)
+            views_task.apply_async((record.id,), countdown=time_out)
+        else:
+            record.is_deleted = True
+            record.is_active = False
+            record.save()
