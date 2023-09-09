@@ -33,5 +33,5 @@ class RecordAdmin(admin.ModelAdmin):
     ordering = ('-date_created',)
     search_fields = ('is_active', 'is_deleted',)
     actions = [update]
-    list_filter = ('category', 'owner__name')
+    list_filter = ('is_active', 'is_deleted')
     list_editable = ('stats_date', 'release_date',)
