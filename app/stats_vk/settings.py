@@ -6,10 +6,10 @@ import stats.tasks
 BASE_DIR = Path(__file__).resolve().parent.parent
 CSRF_TRUSTED_ORIGINS = ['http://80.87.96.34/',]
 
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
+
 
 ALLOWED_HOSTS = ['http://80.87.96.34/', 'app', '*', 'app:8000']
 
@@ -56,12 +56,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'stats_vk.wsgi.application'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DB_ENGINE'),
@@ -120,5 +114,9 @@ CELERY_BEAT_SCHEDULE = {
     "is_active_task": {
         "task": "stats.tasks.is_active_task",
         "schedule": crontab(minute=0, hour='*/3'),
+    },
+    "views_time_out_task": {
+        "task": "stats.tasks.views_time_out_task",
+        "schedule": crontab(minute='*/25'),
     },
 }

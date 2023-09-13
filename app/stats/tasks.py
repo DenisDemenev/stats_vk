@@ -5,23 +5,28 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 
-@shared_task()
-def views_task(id):
+@shared_task(bind=True, max_retries=3)
+def views_task(self, id):
+    from celery.exceptions import Retry
+
     from stats.models import Record
     from stats.utils import release_date
     import time
 
-    time.sleep(1)
-    record = Record.objects.get(id=id)
-    post = release_date(record.link.split('=wall')[1])
-    views = post['views']['count']
-    if views:
-        record.views = views
-        record.save()
-    else:
-        record.is_deleted = True
-        record.is_active = False
-        record.save()
+    try:
+        time.sleep(1)
+        record = Record.objects.get(id=id)
+        post = release_date(record.link.split('=wall')[1])
+        views = post['views']['count']
+        if views:
+            record.views = views
+            record.save()
+        else:
+            record.is_deleted = True
+            record.is_active = False
+            record.save()
+    except Exception as exc:
+        self.retry(exc=exc, countdown=5)
 
 
 @shared_task
@@ -79,11 +84,16 @@ def manual_release_date_task(record_id):
         stats_date = int(post['date']) + 85800
         record.stats_date = datetime.datetime.fromtimestamp(stats_date)
         record.save()
-        time_out = stats_date - time.time()
-        if time_out > 0:
-            # views_task.delay(time_out, rec.id)
-            views_task.apply_async((record.id,), countdown=time_out)
-        else:
-            record.is_deleted = True
-            record.is_active = False
-            record.save()
+
+
+@shared_task
+def views_time_out_task():
+    from stats.models import Record
+    import time
+
+    record = Record.objects.filter(is_active=True)
+    for rec in record:
+        if rec.stats_date:
+            time_out = int(rec.stats_date.timestamp() - time.time())
+            if time_out <= 1800:
+                views_task.apply_async((rec.id,), countdown=time_out)
