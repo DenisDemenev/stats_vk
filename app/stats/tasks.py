@@ -93,7 +93,7 @@ def views_time_out_task():
 
     record = Record.objects.filter(is_active=True)
     for rec in record:
-        if rec.stats_date:
+        if rec.stats_date and not rec.views:
             time_out = int(rec.stats_date.timestamp() - time.time())
             if time_out <= 1800:
                 views_task.apply_async((rec.id,), countdown=time_out)
