@@ -117,6 +117,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     "views_time_out_task": {
         "task": "stats.tasks.views_time_out_task",
-        "schedule": crontab(minute='*/25'),
+        "schedule": crontab(minute='*/20'),
     },
 }
