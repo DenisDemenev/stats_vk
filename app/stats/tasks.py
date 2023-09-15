@@ -97,3 +97,25 @@ def views_time_out_task():
             time_out = int(rec.stats_date.timestamp() - time.time())
             if time_out <= 1800:
                 views_task.apply_async((rec.id,), countdown=time_out)
+
+
+@shared_task(bind=True, max_retries=3)
+def manual_views_task(self, record_id):
+    from stats.models import Record
+    from stats.utils import release_date
+    import time
+
+    try:
+        time.sleep(1)
+        record = Record.objects.get(id=record_id)
+        post = release_date(record.link.split('=wall')[1])
+        views = post['views']['count']
+        if views:
+            record.views = views
+            record.save()
+        else:
+            record.is_deleted = True
+            record.is_active = False
+            record.save()
+    except Exception as exc:
+        self.retry(exc=exc, countdown=5)
